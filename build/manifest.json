@@ -1,25 +1,20 @@
 {
   "manifest_version": 3,
-  "name": "LG New Tab",
-  "short_name": "LG Tab",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "version": "1.0",
   "description": "A Liquid Galaxy New Tab Extension for Microsoft Edge.",
-  "action": {
-    "default_popup": "index.html",
-    "default_icon": {
-      "16": "favicon.ico",
-      "48": "logo192.png",
-      "128": "logo512.png"
-    }
+  "chrome_url_overrides": {
+    "newtab": "index.html"
   },
   "permissions": ["storage", "tabs"],
   "host_permissions": ["http://*/", "https://*/"],
-  "background": {
-    "service_worker": "background.js"
-  },
   "icons": {
     "16": "favicon.ico",
+    "32": "logo192.png",
     "48": "logo192.png",
     "128": "logo512.png"
-  }
+  },
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
 }
