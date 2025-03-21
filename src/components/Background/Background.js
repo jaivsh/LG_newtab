@@ -10,79 +10,108 @@ const BackgroundContainer = styled.div`
   width: 100%;
   height: 100%;
   z-index: -1;
-  canvas {
-    display: block;
-  }
 `;
 
-const Background = ({ type = 'particles' }) => {
+const Background = ({ type = 'vanta' }) => {
   const containerRef = useRef(null);
+  const vantaEffectRef = useRef(null);
   const sceneRef = useRef(null);
   const cameraRef = useRef(null);
   const rendererRef = useRef(null);
   const animationRef = useRef(null);
   
   useEffect(() => {
-    // Set up scene
-    const scene = new THREE.Scene();
-    sceneRef.current = scene;
-    
-    // Set up camera
-    const camera = new THREE.PerspectiveCamera(
-      75, window.innerWidth / window.innerHeight, 0.1, 1000
-    );
-    camera.position.z = 5;
-    cameraRef.current = camera;
-    
-    // Set up renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    containerRef.current.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
-    
-    // Create different background types
-    if (type === 'particles') {
-      createParticleBackground(scene);
-    } else if (type === 'waves') {
-      createWaveBackground(scene);
-    } else if (type === 'galaxy') {
-      createGalaxyBackground(scene);
-    }
-    
-    // Animation loop
-    const animate = () => {
-      animationRef.current = requestAnimationFrame(animate);
-      
-      // Rotate or animate elements
-      scene.children.forEach(child => {
-        if (child.type === 'Points') {
-          child.rotation.y += 0.001;
-        }
-      });
-      
-      renderer.render(scene, camera);
-    };
-    
-    animate();
-    
-    // Handle window resize
-    const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    };
-    
-    window.addEventListener('resize', handleResize);
-    
-    // Cleanup
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationRef.current);
-      if (containerRef.current && renderer.domElement) {
-        containerRef.current.removeChild(renderer.domElement);
+    if (type === 'vanta') {
+      // Check if VANTA is available in the global scope
+      // Use window.VANTA instead of VANTA directly to avoid ESLint issues
+      if (typeof window !== 'undefined' && window.VANTA && window.VANTA.WAVES) {
+        vantaEffectRef.current = window.VANTA.WAVES({
+          el: containerRef.current,
+          THREE: THREE,
+          mouseControls: true,
+          touchControls: true,
+          gyroControls: false,
+          minHeight: 200.00,
+          minWidth: 200.00,
+          scale: 1.00,
+          scaleMobile: 1.00,
+          color: 0x060707,
+          waveHeight: 20,
+          waveSpeed: 0.75,
+          zoom: 0.65
+        });
+      } else {
+        console.error('VANTA.WAVES is not available. Make sure you have included the script in your HTML.');
       }
-    };
+
+      // Clean up
+      return () => {
+        if (vantaEffectRef.current) {
+          vantaEffectRef.current.destroy();
+        }
+      };
+    } else {
+      // Set up Three.js scene for other background types
+      const scene = new THREE.Scene();
+      sceneRef.current = scene;
+      
+      // Set up camera
+      const camera = new THREE.PerspectiveCamera(
+        75, window.innerWidth / window.innerHeight, 0.1, 1000
+      );
+      camera.position.z = 5;
+      cameraRef.current = camera;
+      
+      // Set up renderer
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      containerRef.current.appendChild(renderer.domElement);
+      rendererRef.current = renderer;
+      
+      // Create different background types
+      if (type === 'particles') {
+        createParticleBackground(scene);
+      } else if (type === 'waves') {
+        createWaveBackground(scene);
+      } else if (type === 'galaxy') {
+        createGalaxyBackground(scene);
+      }
+      
+      // Animation loop
+      const animate = () => {
+        animationRef.current = requestAnimationFrame(animate);
+        
+        // Rotate or animate elements
+        scene.children.forEach(child => {
+          if (child.type === 'Points') {
+            child.rotation.y += 0.001;
+          }
+        });
+        
+        renderer.render(scene, camera);
+      };
+      
+      animate();
+      
+      // Handle window resize
+      const handleResize = () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      };
+      
+      window.addEventListener('resize', handleResize);
+      
+      // Cleanup
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        cancelAnimationFrame(animationRef.current);
+        if (containerRef.current && renderer.domElement) {
+          containerRef.current.removeChild(renderer.domElement);
+        }
+      };
+    }
   }, [type]);
   
   const createParticleBackground = (scene) => {
