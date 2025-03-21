@@ -10,7 +10,7 @@ const GlobalStyles = createGlobalStyle`
 
   body {
     font-family: 'Inter', 'Roboto', sans-serif;
-    background-color: ${props => props.theme.colors.background.main};
+     
     color: ${props => props.theme.colors.text.primary};
     transition: ${props => props.theme.transition.default};
   }

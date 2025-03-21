@@ -6,14 +6,16 @@ import Clock from '../components/Clock/Clock';
 import SearchBar from '../components/SearchBar/SearchBar';
 import LinkCard from '../components/LinkCard/LinkCard';
 import AddLinkModal from '../components/AddLinkModal/AddLinkModal';
-import Background from '../components/Background/Background';
-import SettingsModal from '../components/SettingsModal/SettingsModal';
+import ThreeJsAnimation from '../components/ThreeJsAnimation'; 
 
 const DashboardContainer = styled.div`
   min-height: 100vh;
   padding: ${props => props.theme.spacing.lg};
   display: flex;
   flex-direction: column;
+  position: relative;
+  z-index: 1;
+  background: transparent;
 `;
 
 const Header = styled.header`
@@ -27,7 +29,6 @@ const Logo = styled.div`
   font-size: 1.5rem;
   font-weight: bold;
   color: ${props => props.theme.colors.text.primary};
-  
   span {
     color: ${props => props.theme.colors.accent};
   }
@@ -46,6 +47,7 @@ const FloatingButtons = styled.div`
   right: ${props => props.theme.spacing.lg};
   display: flex;
   gap: ${props => props.theme.spacing.md};
+  z-index: 2;
 `;
 
 const FloatingButton = styled(motion.button)`
@@ -61,7 +63,6 @@ const FloatingButton = styled(motion.button)`
   box-shadow: ${props => props.theme.shadows.medium};
   transition: ${props => props.theme.transition.default};
   cursor: pointer;
-  
   &:hover {
     transform: scale(1.05);
     background-color: ${props => props.theme.colors.highlight};
@@ -71,12 +72,12 @@ const FloatingButton = styled(motion.button)`
 const Dashboard = () => {
   const { links, addLink, removeLink, editLink } = useLinks();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [backgroundType, setBackgroundType] = useState('vanta');
-
+  
   return (
     <>
-      <Background type={backgroundType} />
+      {/* Always render the ThreeJs animation */}
+      <ThreeJsAnimation />
+      
       <DashboardContainer>
         <Header>
           <Logo>Liquid <span>Galaxy</span> Tab by Jaivardhan Shukla</Logo>
@@ -85,43 +86,27 @@ const Dashboard = () => {
         <SearchBar />
         <LinksGrid>
           {links.map(link => (
-            <LinkCard 
-              key={link.id} 
-              link={link} 
-              onDelete={removeLink} 
+            <LinkCard
+              key={link.id}
+              link={link}
+              onDelete={removeLink}
               onEdit={editLink}
             />
           ))}
         </LinksGrid>
-        
         <FloatingButtons>
-          <FloatingButton 
+          <FloatingButton
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsAddModalOpen(true)}
           >
             +
           </FloatingButton>
-          <FloatingButton 
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsSettingsOpen(true)}
-          >
-            ⚙️
-          </FloatingButton>
         </FloatingButtons>
-        
         {isAddModalOpen && (
-          <AddLinkModal 
-            onClose={() => setIsAddModalOpen(false)} 
+          <AddLinkModal
+            onClose={() => setIsAddModalOpen(false)}
             onAdd={addLink}
-          />
-        )}
-        {isSettingsOpen && (
-          <SettingsModal 
-            onClose={() => setIsSettingsOpen(false)}
-            backgroundType={backgroundType}
-            setBackgroundType={setBackgroundType}
           />
         )}
       </DashboardContainer>
